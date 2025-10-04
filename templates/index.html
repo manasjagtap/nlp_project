@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Sentiment Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Financial News Sentiment Analyzer 📈</h1>
+        <p>Enter a sentence or headline to analyze its sentiment.</p>
+        <textarea id="text-input" placeholder="e.g., 'The company reported record profits this quarter.'"></textarea>
+        <button id="analyze-btn">Analyze Sentiment</button>
+        <div id="result-container">
+            <h2>Sentiment:</h2>
+            <p id="result-text">--</p>
+        </div>
+    </div>
+
+    <script>
+        // --- JavaScript to connect frontend to backend ---
+
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const textInput = document.getElementById('text-input');
+        const resultText = document.getElementById('result-text');
+        const resultContainer = document.getElementById('result-container');
+
+        // Function to update the result display style based on sentiment
+        function updateResultStyle(sentiment) {
+            resultText.className = ''; // Reset classes
+            if (sentiment === 'Positive') {
+                resultText.classList.add('positive');
+            } else if (sentiment === 'Negative') {
+                resultText.classList.add('negative');
+            } else if (sentiment === 'Neutral') {
+                resultText.classList.add('neutral');
+            }
+        }
+
+        analyzeBtn.addEventListener('click', () => {
+            const text = textInput.value;
+
+            if (!text.trim()) {
+                alert('Please enter some text to analyze.');
+                return;
+            }
+
+            // Show a loading state
+            resultText.innerText = 'Analyzing...';
+            updateResultStyle('loading');
+
+            // Send the text to our Flask backend using the Fetch API
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.sentiment) {
+                    // Update the text and style with the result
+                    resultText.innerText = data.sentiment;
+                    updateResultStyle(data.sentiment);
+                } else if (data.error) {
+                    resultText.innerText = `Error: ${data.error}`;
+                    updateResultStyle('error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultText.innerText = 'Failed to connect to the server.';
+                updateResultStyle('error');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Python virtual environment
+# This is crucial to ignore! It's machine-specific.
+venv/
+env/
+.venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE and editor configuration files
+.vscode/
+.idea/
+*.DS_Store
+
+# Log files
+*.log
+
+# Environment variables (for storing secrets)
+.env
+
+# Optional: Ignore the model files
+# Uncomment the line below if your model is very large (over 100MB)
+# and you plan to use Git LFS or download it separately.
+# For a simple project, it's okay to keep the model in the repo.
+# finbert-financial-sentiment-model/
